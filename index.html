@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Doughbird — Small-batch doughnuts, Portland OR</title>
+<meta name="description" content="Doughbird is a small-batch doughnut shop on SE Division in Portland. Twelve rotating flavors, fried from 6am, sold until they are gone.">
+<meta name="theme-color" content="#2B1B14">
+<style>
+  :root{
+    --cream:#FBF3E6;
+    --cream-2:#F3E6D0;
+    --cream-3:#EAD9BE;
+    --choc:#2A1A13;
+    --choc-2:#3D281E;
+    --choc-soft:#6B5044;
+    --raspberry:#C6315B;
+    --raspberry-dk:#9C2145;
+    --butter:#E4A24C;
+    --glaze:#F7CBD5;
+    --rule:rgba(42,26,19,.14);
+    --display:'Fraunces','Playfair Display',Georgia,'Times New Roman',serif;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --pad:clamp(1.25rem,4vw,3rem);
+    --sec:clamp(4rem,10vw,8rem);
+    --ease:cubic-bezier(.16,1,.3,1);
+  }
+
+  *,*::before,*::after{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--cream);color:var(--choc);
+    font-family:var(--sans);font-size:clamp(1rem,.95rem + .2vw,1.0625rem);
+    line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+  }
+  img{max-width:100%;display:block}
+  a{color:inherit}
+  h1,h2,h3,blockquote{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;margin:0}
+  h1{font-size:clamp(2.75rem,7.5vw,5.75rem)}
+  h2{font-size:clamp(2rem,4.6vw,3.6rem);line-height:1.08}
+  h3{font-size:clamp(1.2rem,2vw,1.5rem);line-height:1.2}
+  p{margin:0}
+
+  .wrap{width:100%;max-width:1220px;margin-inline:auto;padding-inline:var(--pad)}
+  .eyebrow{
+    font-family:var(--sans);font-size:.72rem;font-weight:600;letter-spacing:.19em;
+    text-transform:uppercase;margin:0;
+  }
+  .eyebrow-dot{display:inline-block;width:.5em;height:.5em;border-radius:50%;
+    background:var(--raspberry);vertical-align:middle;margin-right:.55em;transform:translateY(-1px)}
+
+  .skip{position:absolute;left:-9999px;top:0;background:var(--choc);color:var(--cream);
+    padding:.7rem 1.1rem;z-index:200;border-radius:0 0 .5rem 0}
+  .skip:focus{left:0}
+  :focus-visible{outline:3px solid var(--raspberry);outline-offset:3px;border-radius:4px}
+
+  /* ---------- top strip ---------- */
+  .topbar{background:var(--choc);color:var(--cream-2);font-size:.74rem;letter-spacing:.11em;
+    text-transform:uppercase}
+  .topbar .wrap{display:flex;gap:1.5rem;flex-wrap:wrap;justify-content:space-between;
+    align-items:center;padding-block:.65rem}
+  .topbar b{color:var(--butter);font-weight:600}
+
+  /* ---------- nav ---------- */
+  .nav{position:sticky;top:0;z-index:80;background:rgba(251,243,230,.82);
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--rule)}
+  .nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+    padding-block:.85rem}
+  .brand{display:flex;align-items:center;gap:.7rem;text-decoration:none;
+    font-family:var(--display);font-size:clamp(1.35rem,2.4vw,1.7rem);font-weight:700;
+    letter-spacing:-.03em}
+  .brand svg{width:1.6em;height:1.6em;flex:none}
+  .nav-links{display:flex;gap:clamp(1rem,2.4vw,2rem);align-items:center}
+  .nav-links a{text-decoration:none;font-size:.9rem;font-weight:500;opacity:.82;
+    padding-block:.2rem;border-bottom:2px solid transparent;transition:.25s var(--ease)}
+  .nav-links a:hover{opacity:1;border-bottom-color:var(--raspberry)}
+
+  .btn{display:inline-block;text-decoration:none;font-size:.86rem;font-weight:600;
+    letter-spacing:.03em;padding:.72rem 1.35rem;border-radius:100px;white-space:nowrap;
+    border:1.5px solid transparent;transition:transform .25s var(--ease),background .25s,color .25s,border-color .25s}
+  .btn-primary{background:var(--choc);color:var(--cream)}
+  .btn-primary:hover{background:var(--raspberry-dk);transform:translateY(-2px)}
+  .btn-ghost{border-color:rgba(251,243,230,.5);color:var(--cream)}
+  .btn-ghost:hover{background:rgba(251,243,230,.14);transform:translateY(-2px)}
+  .btn-sm{padding:.58rem 1.1rem;font-size:.8rem}
+  .btn-outline{border-color:var(--rule);color:var(--choc)}
+  .btn-outline:hover{background:var(--cream-3);border-color:var(--choc-soft);transform:translateY(-2px)}
+
+  /* ---------- hero ---------- */
+  .hero{position:relative;isolation:isolate;overflow:hidden;color:var(--cream);
+    background:var(--choc);padding-block:clamp(3.25rem,7vw,5.5rem)}
+  .hero::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+    background:
+      radial-gradient(90% 120% at 4% 100%,rgba(155,33,69,.5),transparent 60%),
+      radial-gradient(75% 95% at 94% 0%,rgba(228,162,76,.2),transparent 62%)}
+  .hero::after{content:"";position:absolute;width:min(52vw,600px);aspect-ratio:1;
+    border-radius:50%;border:1.5px dashed rgba(251,243,230,.15);
+    left:-17vw;top:-19vw;z-index:0;pointer-events:none}
+  .hero-grid{position:relative;z-index:2;display:grid;align-items:center;
+    gap:clamp(2.5rem,5vw,4.5rem);grid-template-columns:1.06fr .94fr}
+  .hero .eyebrow{color:var(--glaze)}
+  .hero h1{margin:1.1rem 0 0}
+  .hero h1 em{font-style:italic;color:var(--butter)}
+  .hero .lede{margin-top:1.4rem;font-size:clamp(1rem,1.7vw,1.15rem);line-height:1.62;
+    color:rgba(251,243,230,.88);max-width:46ch}
+  .hero-cta{display:flex;gap:.85rem;flex-wrap:wrap;margin-top:2rem}
+  .hero .btn-primary{background:var(--cream);color:var(--choc)}
+  .hero .btn-primary:hover{background:var(--butter);color:var(--choc)}
+  .hero-facts{list-style:none;display:flex;flex-wrap:wrap;gap:.6rem 1.75rem;margin:2.6rem 0 0;
+    padding:1.15rem 0 0;border-top:1px solid rgba(251,243,230,.24);font-size:.83rem;
+    letter-spacing:.06em;text-transform:uppercase;color:rgba(251,243,230,.82)}
+  .hero-facts li{display:flex;align-items:center;gap:.5rem}
+  .hero-facts li::before{content:"";width:.45rem;height:.45rem;border-radius:50%;
+    background:var(--butter);flex:none}
+
+  /* the hero photo is a small file, so it sits in a contained frame at close to
+     its native size instead of being blown up to full-bleed width */
+  .hero-plate{position:relative;margin:0;width:100%;max-width:520px;justify-self:end}
+  .hero-plate::before{content:"";position:absolute;top:-1.6rem;right:-1.4rem;
+    width:6.5rem;height:6.5rem;border-radius:50%;
+    border:1.5px dashed rgba(228,162,76,.55);z-index:2;pointer-events:none}
+  .hero-plate img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:1.6rem;
+    border:1px solid rgba(251,243,230,.16);
+    box-shadow:0 46px 80px -44px rgba(0,0,0,.85)}
+  .hero-stamp{position:absolute;left:-.85rem;bottom:-1rem;z-index:3;
+    transform:rotate(-4deg);background:var(--butter);color:var(--choc);
+    font-family:var(--sans);font-size:.7rem;font-weight:700;letter-spacing:.14em;
+    text-transform:uppercase;padding:.6rem 1rem;border-radius:.5rem;
+    box-shadow:0 16px 28px -16px rgba(0,0,0,.85)}
+
+  /* ---------- marquee ---------- */
+  .marquee{background:var(--raspberry-dk);color:var(--cream);overflow:hidden;
+    padding-block:.9rem;border-block:1px solid rgba(0,0,0,.15)}
+  .marquee-track{display:flex;width:max-content;gap:2.75rem;
+    animation:slide 42s linear infinite}
+  .marquee-track span{font-family:var(--display);font-size:1.05rem;letter-spacing:.02em;
+    display:flex;align-items:center;gap:2.75rem;white-space:nowrap}
+  .marquee-track span::after{content:"";width:.42rem;height:.42rem;border-radius:50%;
+    background:var(--glaze);flex:none}
+  @keyframes slide{to{transform:translateX(-50%)}}
+
+  /* ---------- sections ---------- */
+  .section{padding-block:var(--sec)}
+  .sec-head{max-width:44ch}
+  .sec-head h2{margin-top:1rem}
+  .sec-head p.lead{margin-top:1.3rem;color:var(--choc-soft);max-width:52ch}
+  .sec-head .eyebrow{color:var(--raspberry-dk)}
+
+  /* case cards */
+  .case{background:var(--cream)}
+  .cards{display:grid;gap:clamp(1.5rem,3vw,2.25rem);margin-top:clamp(2.5rem,5vw,4rem);
+    grid-template-columns:repeat(auto-fit,minmax(270px,1fr))}
+  .card{position:relative;background:var(--cream);border:1px solid var(--rule);
+    border-radius:1.5rem;transition:transform .5s var(--ease),box-shadow .5s var(--ease)}
+  .card:hover{transform:translateY(-8px);box-shadow:0 26px 50px -26px rgba(42,26,19,.45)}
+  .card-photo{border-radius:1.5rem 1.5rem 0 0;overflow:hidden;aspect-ratio:1/1;background:var(--cream-3)}
+  .card-photo img{width:100%;height:100%;object-fit:cover;
+    transition:transform .7s var(--ease)}
+  .card:hover .card-photo img{transform:scale(1.055)}
+  .card-body{padding:1.4rem 1.5rem 1.7rem}
+  .card-body h3{margin-bottom:.6rem}
+  .card-body p{font-size:.93rem;color:var(--choc-soft);line-height:1.6}
+  .price{margin-top:1.1rem;font-family:var(--display);font-size:1.15rem;font-weight:700;
+    color:var(--raspberry-dk);letter-spacing:.01em}
+  .tag{position:absolute;top:-.85rem;right:1.1rem;z-index:3;transform:rotate(-5deg);
+    background:var(--choc);color:var(--cream);font-size:.68rem;font-weight:700;
+    letter-spacing:.14em;text-transform:uppercase;padding:.45rem .85rem .45rem 1.9rem;
+    border-radius:.35rem;box-shadow:0 10px 18px -10px rgba(42,26,19,.7)}
+  .tag::before{content:"";position:absolute;left:.6rem;top:50%;width:.5rem;height:.5rem;
+    border-radius:50%;background:var(--cream);transform:translateY(-50%)}
+  .tag-alt{background:var(--raspberry-dk)}
+  .tag-butter{background:var(--butter);color:var(--choc)}
+  .tag-butter::before{background:var(--choc)}
+
+  /* story — type only, ink panel */
+  .story{background:var(--choc);color:var(--cream);position:relative;overflow:hidden}
+  .story::before{content:"";position:absolute;width:min(60vw,560px);aspect-ratio:1;
+    border-radius:50%;border:1.5px dashed rgba(228,162,76,.35);
+    right:-12vw;top:-16vw;pointer-events:none}
+  .story::after{content:"";position:absolute;width:min(34vw,300px);aspect-ratio:1;
+    border-radius:50%;border:1.5px solid rgba(247,203,213,.22);
+    right:-4vw;bottom:-14vw;pointer-events:none}
+  .story .eyebrow{color:var(--butter)}
+  .story-grid{display:grid;gap:clamp(2rem,5vw,4rem);grid-template-columns:1.05fr .95fr;
+    align-items:start;position:relative;z-index:2}
+  .story h2{margin-top:1rem;max-width:20ch}
+  .story .body p{margin-top:1.3rem;color:rgba(251,243,230,.78);max-width:46ch}
+  .story blockquote{margin:0;border-left:3px solid var(--raspberry);
+    padding:.35rem 0 .35rem 1.6rem}
+  .story blockquote p{font-family:var(--display);font-style:italic;
+    font-size:clamp(1.35rem,2.5vw,1.95rem);line-height:1.35;color:var(--cream);
+    max-width:24ch;margin:0}
+  .story blockquote cite{display:block;margin-top:1.4rem;font-style:normal;
+    font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;color:var(--butter)}
+  .facts{list-style:none;display:grid;gap:1.75rem;margin:clamp(3rem,6vw,4.5rem) 0 0;
+    padding:clamp(1.75rem,4vw,2.5rem) 0 0;border-top:1px solid rgba(251,243,230,.2);
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));position:relative;z-index:2}
+  .facts b{display:block;font-family:var(--display);font-size:clamp(1.7rem,3.4vw,2.5rem);
+    color:var(--butter);letter-spacing:-.02em}
+  .facts span{display:block;margin-top:.4rem;font-size:.88rem;line-height:1.55;
+    color:rgba(251,243,230,.72)}
+
+  /* visit + menu */
+  .visit{background:var(--cream-2)}
+  .visit-grid{display:grid;gap:clamp(2rem,5vw,4rem);grid-template-columns:1.1fr .9fr;
+    align-items:start}
+  .visit-card{background:var(--cream);border:1px solid var(--rule);border-radius:1.5rem;
+    padding:clamp(1.6rem,4vw,2.6rem);box-shadow:0 30px 60px -40px rgba(42,26,19,.5)}
+  .visit-card h2{margin-top:.9rem;font-size:clamp(1.7rem,3.4vw,2.5rem)}
+  .address{margin-top:1.3rem;font-size:1.02rem;line-height:1.7;color:var(--choc-soft)}
+  .address strong{color:var(--choc);font-weight:600}
+  .hours{list-style:none;margin:1.8rem 0 0;padding:1.5rem 0 0;border-top:1px solid var(--rule)}
+  .hours li{display:flex;justify-content:space-between;gap:1rem;padding-block:.4rem;
+    font-size:.92rem;color:var(--choc-soft)}
+  .hours li b{color:var(--choc);font-weight:600}
+  .hours li.today{color:var(--raspberry-dk)}
+  .hours li.today b{color:var(--raspberry-dk)}
+  .visit-cta{display:flex;gap:.8rem;flex-wrap:wrap;margin-top:1.9rem}
+  .visit-cta .btn-primary:hover{background:var(--raspberry-dk)}
+
+  .menu{position:relative}
+  .menu .eyebrow{color:var(--raspberry-dk)}
+  .menu h3{margin-top:.9rem;font-size:clamp(1.4rem,2.6vw,1.9rem)}
+  .menu ul{list-style:none;margin:1.8rem 0 0;padding:0}
+  .menu li{display:flex;align-items:baseline;gap:.9rem;padding-block:1.05rem;
+    border-bottom:1px solid var(--rule)}
+  .menu li:first-child{border-top:1px solid var(--rule)}
+  .menu .name{font-family:var(--display);font-size:1.12rem;font-weight:600}
+  .menu .note{font-size:.83rem;color:var(--choc-soft);display:block;margin-top:.2rem;
+    font-family:var(--sans);font-weight:400;letter-spacing:0}
+  .menu .dots{flex:1;border-bottom:1.5px dotted rgba(42,26,19,.3);transform:translateY(-.25rem)}
+  .menu .cost{font-family:var(--display);font-weight:700;color:var(--raspberry-dk)}
+  .menu-foot{margin-top:1.5rem;font-size:.86rem;color:var(--choc-soft)}
+
+  /* footer */
+  .foot{background:var(--choc);color:rgba(251,243,230,.8);
+    padding-block:clamp(2.5rem,6vw,4rem)}
+  .foot .wrap{display:flex;gap:1.5rem 2.5rem;flex-wrap:wrap;
+    justify-content:space-between;align-items:flex-end}
+  .foot .brand{color:var(--cream)}
+  .foot .brand svg{color:var(--butter)}
+  .foot p{font-size:.82rem;max-width:42ch;line-height:1.7}
+  .foot-line{margin-top:1rem}
+  .foot .fine{font-size:.74rem;color:rgba(251,243,230,.55)}
+  .foot a{color:var(--butter);text-decoration:none}
+  .foot a:hover{text-decoration:underline}
+
+  /* grain */
+  .grain::before{content:"";position:fixed;inset:0;z-index:70;pointer-events:none;
+    opacity:.55;mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.14'/%3E%3C/svg%3E")}
+
+  @media (max-width:900px){
+    .hero-grid,.story-grid,.visit-grid{grid-template-columns:1fr}
+    .hero-plate{justify-self:start;max-width:560px}
+    .hero-plate::before{width:5rem;height:5rem;top:-1.2rem;right:-.8rem}
+    .story::before,.story::after{opacity:.5}
+  }
+  @media (max-width:720px){
+    .nav-links{display:none}
+    .hero{padding-block:clamp(2.75rem,12vw,4rem)}
+    .hero-facts{gap:.5rem 1.25rem;font-size:.76rem}
+    .hero-stamp{left:-.5rem;bottom:-.85rem;padding:.5rem .85rem;font-size:.66rem}
+    .hero::after{width:74vw;left:-30vw;top:-14vw}
+    .topbar .wrap{justify-content:center;text-align:center;gap:.3rem 1.25rem}
+    .menu li{padding-block:.9rem}
+    .foot .wrap{flex-direction:column;align-items:flex-start}
+  }
+  /* ---------- motion ----------
+     Nothing on this page hides behind an IntersectionObserver, so content is
+     painted even if no script ever runs. Only the hero blocks animate in, and
+     both keyframes end at the fully visible state. */
+  @keyframes rise{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  .hero-copy{animation:rise .9s var(--ease) both}
+  .hero-plate{animation:rise 1.05s var(--ease) both}
+  .hero-stamp{animation:fade .5s var(--ease) .55s both}
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    .marquee-track{animation:none}
+    .card:hover,.btn:hover,.card:hover .card-photo img{transform:none}
+    .hero-copy,.hero-plate,.hero-stamp{animation:none}
+  }
+
+  /* ---------- account ---------- */
+  .nav-account{display:flex;align-items:center;gap:.5rem;flex:none}
+  .acct-btn{
+    font:inherit;font-size:.88rem;font-weight:600;letter-spacing:.01em;color:var(--choc);
+    background:transparent;border:1.5px solid var(--rule);border-radius:999px;
+    padding:.48rem .95rem;cursor:pointer;white-space:nowrap;
+    transition:background .25s var(--ease),border-color .25s var(--ease);
+  }
+  .acct-btn:hover{background:var(--cream-2);border-color:var(--choc)}
+  .acct-user{
+    display:flex;align-items:center;gap:.5rem;flex:none;
+    padding:.28rem .5rem .28rem .28rem;background:var(--cream-2);
+    border:1.5px solid var(--rule);border-radius:999px;max-width:15rem;
+  }
+  .acct-avatar{
+    width:1.8rem;height:1.8rem;flex:none;border-radius:50%;background:var(--raspberry);
+    color:#fff;display:grid;place-items:center;font-size:.8rem;font-weight:700;
+    text-transform:uppercase;line-height:1;
+  }
+  .acct-name{
+    font-size:.88rem;font-weight:600;white-space:nowrap;overflow:hidden;
+    text-overflow:ellipsis;min-width:0;
+  }
+  .acct-out{
+    flex:none;border:0;background:transparent;color:var(--choc-soft);font:inherit;
+    font-size:.76rem;font-weight:600;cursor:pointer;padding:.15rem .2rem;
+    text-decoration:underline;text-underline-offset:3px;white-space:nowrap;
+  }
+  .acct-out:hover{color:var(--raspberry-dk)}
+  .acct-btn:focus-visible,.acct-out:focus-visible{outline:2.5px solid var(--raspberry);outline-offset:2px}
+
+  /* ---------- account modal ---------- */
+  .modal{
+    position:fixed;inset:0;z-index:120;display:none;place-items:center;padding:1.1rem;
+    background:rgba(42,26,19,.58);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+  }
+  .modal[data-open="true"]{display:grid}
+  .modal-card{
+    position:relative;width:100%;max-width:26rem;max-height:92vh;overflow:auto;
+    background:var(--cream);border:1.5px solid var(--cream-3);border-radius:1.3rem;
+    box-shadow:0 30px 70px rgba(30,17,11,.44);padding:clamp(1.35rem,4vw,1.9rem);
+    animation:cardIn .38s var(--ease) both;
+  }
+  @keyframes cardIn{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:none}}
+  .modal-x{
+    position:absolute;top:.75rem;right:.75rem;width:2.1rem;height:2.1rem;border-radius:50%;
+    border:1.5px solid var(--rule);background:transparent;color:var(--choc);
+    font:inherit;font-size:1.05rem;line-height:1;cursor:pointer;display:grid;place-items:center;
+  }
+  .modal-x:hover{background:var(--cream-2)}
+  .modal-kicker{
+    font-family:var(--sans);font-size:.7rem;font-weight:700;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--raspberry);margin:0 0 .4rem;
+  }
+  .modal-card h2{
+    font-family:var(--display);font-weight:600;font-size:1.55rem;line-height:1.15;
+    margin:0;letter-spacing:-.01em;
+  }
+  .modal-lede{font-size:.9rem;color:var(--choc-soft);margin:.5rem 0 0;line-height:1.5}
+  .modal-tabs{
+    display:grid;grid-template-columns:1fr 1fr;gap:.3rem;background:var(--cream-2);
+    border:1.5px solid var(--rule);border-radius:999px;padding:.3rem;margin:1.15rem 0 1.2rem;
+  }
+  .modal-tab{
+    font:inherit;font-size:.88rem;font-weight:600;color:var(--choc-soft);background:transparent;
+    border:0;border-radius:999px;padding:.5rem .6rem;cursor:pointer;
+    transition:background .25s var(--ease),color .25s var(--ease);
+  }
+  .modal-tab[aria-selected="true"]{background:var(--choc);color:var(--cream)}
+  .field{margin:0 0 .8rem}
+  .field label{
+    display:block;font-size:.73rem;font-weight:700;letter-spacing:.07em;
+    text-transform:uppercase;color:var(--choc-soft);margin-bottom:.35rem;
+  }
+  .field input{
+    width:100%;font:inherit;font-size:.96rem;color:var(--choc);background:#fff;
+    border:1.5px solid var(--rule);border-radius:.7rem;padding:.72rem .85rem;
+  }
+  .field input:focus{outline:none;border-color:var(--raspberry);box-shadow:0 0 0 3px rgba(198,49,91,.16)}
+  .field-hint{font-size:.76rem;color:var(--choc-soft);margin:.35rem 0 0}
+  .modal-msg{
+    display:none;font-size:.85rem;line-height:1.45;border-radius:.6rem;
+    padding:.6rem .75rem;margin:0 0 .9rem;
+  }
+  .modal-msg[data-kind="error"]{
+    display:block;background:rgba(198,49,91,.1);
+    border:1.5px solid rgba(198,49,91,.34);color:var(--raspberry-dk);
+  }
+  .modal-msg[data-kind="ok"]{
+    display:block;background:rgba(228,162,76,.18);
+    border:1.5px solid rgba(228,162,76,.5);color:#7A4A10;
+  }
+  .modal-submit{width:100%;justify-content:center;margin-top:.35rem}
+  .modal-submit[disabled]{opacity:.6;cursor:progress}
+  .modal-note{font-size:.76rem;color:var(--choc-soft);text-align:center;margin:.9rem 0 0;line-height:1.5}
+  .modal-switch{background:none;border:0;font:inherit;font-size:.76rem;font-weight:600;color:var(--raspberry-dk);cursor:pointer;text-decoration:underline;text-underline-offset:2px;padding:0}
+  body.is-locked{overflow:hidden}
+
+  @media (max-width:620px){
+    .acct-user{max-width:11.5rem;padding:.24rem .45rem .24rem .24rem;gap:.4rem}
+    .acct-name{max-width:7.5ch}
+    .acct-out{font-size:.72rem}
+    .acct-btn{padding:.42rem .75rem;font-size:.82rem}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .modal-card{animation:none}
+  }
+</style>
+<script src="env.js"></script>
+</head>
+<body class="grain">
+<a class="skip" href="#case">Skip to today's doughnuts</a>
+
+<div class="topbar">
+  <div class="wrap">
+    <span>Open today <b>7am – 3pm</b> · 3312 SE Division St</span>
+    <span>Sold out most days by noon · <b>(503) 555-0142</b></span>
+  </div>
+</div>
+
+<nav class="nav">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="Doughbird, home">
+      <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+        <circle cx="24" cy="24" r="21" fill="none" stroke="currentColor" stroke-width="3.4"/>
+        <path d="M15 17c0-4 4-6 9-6s9 2 9 6-4 7-9 7-9-3-9-7z" fill="#C6315B"/>
+        <circle cx="24" cy="30" r="6.5" fill="none" stroke="currentColor" stroke-width="3.4"/>
+      </svg>
+      Doughbird
+    </a>
+    <div class="nav-links">
+      <a href="#case">Today's case</a>
+      <a href="#story">Our dough</a>
+      <a href="#visit">Visit</a>
+      <a class="btn btn-primary btn-sm" href="#visit">Order pickup</a>
+    </div>
+    <div class="nav-account" id="navAccount">
+      <button class="acct-btn" id="accountBtn" type="button" aria-haspopup="dialog" aria-expanded="false">Sign in</button>
+    </div>
+  </div>
+</nav>
+
+<!-- account -->
+<div class="modal" id="accountModal" data-open="false" role="dialog" aria-modal="true" aria-labelledby="accountTitle">
+  <div class="modal-card">
+    <button class="modal-x" id="accountClose" type="button" aria-label="Close sign-in">&#215;</button>
+    <p class="modal-kicker">Doughbird regulars</p>
+    <h2 id="accountTitle">Save your usual</h2>
+    <p class="modal-lede" id="accountLede">Sign in and your name shows up on the case list at the counter.</p>
+
+    <div class="modal-tabs" role="tablist" aria-label="Sign in or create an account">
+      <button class="modal-tab" id="tabSignIn" type="button" role="tab" data-mode="signin" aria-selected="false" aria-controls="accountForm">Sign in</button>
+      <button class="modal-tab" id="tabSignUp" type="button" role="tab" data-mode="signup" aria-selected="true" aria-controls="accountForm">Create account</button>
+    </div>
+
+    <p class="modal-msg" id="accountMsg" role="status" aria-live="polite"></p>
+
+    <form id="accountForm" novalidate>
+      <div class="field" id="usernameField">
+        <label for="acctUsername">Username</label>
+        <input id="acctUsername" name="username" type="text" autocomplete="username" maxlength="20" placeholder="doughbirdfan" spellcheck="false">
+        <p class="field-hint">3 to 20 characters. Letters, numbers and underscores.</p>
+      </div>
+      <div class="field">
+        <label for="acctEmail">Email</label>
+        <input id="acctEmail" name="email" type="email" autocomplete="email" placeholder="you@example.com" required>
+      </div>
+      <div class="field">
+        <label for="acctPassword">Password</label>
+        <input id="acctPassword" name="password" type="password" autocomplete="current-password" placeholder="At least 6 characters" required>
+      </div>
+      <button class="btn btn-primary modal-submit" id="accountSubmit" type="submit">Sign in</button>
+      <p class="modal-note" id="accountNote">No email confirmation: your account works the second you make it.</p>
+    </form>
+  </div>
+</div>
+
+<script src="assets/vendor/supabase.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var els = {
+    nav:      document.getElementById('navAccount'),
+    modal:    document.getElementById('accountModal'),
+    close:    document.getElementById('accountClose'),
+    form:     document.getElementById('accountForm'),
+    title:    document.getElementById('accountTitle'),
+    lede:     document.getElementById('accountLede'),
+    msg:      document.getElementById('accountMsg'),
+    submit:   document.getElementById('accountSubmit'),
+    email:    document.getElementById('acctEmail'),
+    pass:     document.getElementById('acctPassword'),
+    user:     document.getElementById('acctUsername'),
+    userFld:  document.getElementById('usernameField'),
+    tabIn:    document.getElementById('tabSignIn'),
+    tabUp:    document.getElementById('tabSignUp')
+  };
+
+  var mode = 'signin';
+  var client = null;
+  var returnFocus = null;
+
+  // The publishable key is public by design; RLS decides what it can read or write.
+  if (window.SUPABASE_URL && window.SUPABASE_ANON_KEY && window.supabase && window.supabase.createClient) {
+    client = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY, {
+      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false }
+    });
+  }
+
+  /* ---------------------------------------------------------------- helpers */
+
+  function showMsg(kind, text) {
+    els.msg.setAttribute('data-kind', kind);
+    els.msg.textContent = text;
+  }
+
+  function clearMsg() {
+    els.msg.removeAttribute('data-kind');
+    els.msg.textContent = '';
+  }
+
+  function friendly(raw) {
+    var s = String(raw || '').toLowerCase();
+    if (s.indexOf('invalid login credentials') > -1) return 'That email and password do not match an account.';
+    if (s.indexOf('already registered') > -1 || s.indexOf('already been registered') > -1) return 'That email already has an account. Try signing in instead.';
+    if (s.indexOf('database error saving new user') > -1 || s.indexOf('profiles_username_lower_key') > -1) return 'That username was just taken. Try another.';
+    if (s.indexOf('rate') > -1 || s.indexOf('too many') > -1) return 'Too many attempts. Wait a minute and try again.';
+    if (s.indexOf('failed to fetch') > -1 || s.indexOf('network') > -1) return 'Network problem. Check your connection and try again.';
+    if (s.indexOf('password') > -1) return 'Passwords need at least 6 characters.';
+    return raw || 'Something went wrong. Try again.';
+  }
+
+  /* ---------------------------------------------------------------- header */
+
+  function renderSignedOut() {
+    els.nav.textContent = '';
+    var b = document.createElement('button');
+    b.className = 'acct-btn';
+    b.id = 'accountBtn';
+    b.type = 'button';
+    b.setAttribute('aria-haspopup', 'dialog');
+    b.setAttribute('aria-expanded', 'false');
+    b.textContent = 'Sign in';
+    b.addEventListener('click', function () { open('signin'); });
+    els.nav.appendChild(b);
+  }
+
+  function renderSignedIn(user, username) {
+    els.nav.textContent = '';
+    var pill = document.createElement('div');
+    pill.className = 'acct-user';
+
+    var av = document.createElement('span');
+    av.className = 'acct-avatar';
+    av.setAttribute('aria-hidden', 'true');
+    av.textContent = (username || '?').charAt(0);
+
+    var nm = document.createElement('span');
+    nm.className = 'acct-name';
+    nm.textContent = username || '';   // user input, so text and never HTML
+    nm.title = username || '';
+
+    var out = document.createElement('button');
+    out.className = 'acct-out';
+    out.id = 'acctSignOut';
+    out.type = 'button';
+    out.textContent = 'Sign out';
+    out.addEventListener('click', function () {
+      out.disabled = true;
+      out.textContent = 'Signing out';
+      client.auth.signOut().then(refresh).catch(refresh);
+    });
+
+    pill.appendChild(av);
+    pill.appendChild(nm);
+    pill.appendChild(out);
+    els.nav.appendChild(pill);
+
+    if (els.modal.getAttribute('data-open') === 'true') close();
+  }
+
+  function applyUser(user) {
+    if (!user) {
+      renderSignedOut();
+      return;
+    }
+    var meta = user.user_metadata || {};
+    renderSignedIn(user, meta.username || String(user.email || '').split('@')[0]);
+
+    client.from('profiles').select('username').eq('id', user.id).maybeSingle().then(function (r) {
+      var name = r && r.data && r.data.username;
+      if (!name) return;
+      var nm = els.nav.querySelector('.acct-name');
+      var av = els.nav.querySelector('.acct-avatar');
+      if (nm) { nm.textContent = name; nm.title = name; }
+      if (av) { av.textContent = name.charAt(0); }
+    });
+  }
+
+  function refresh() {
+    if (!client) { renderSignedOut(); return; }
+    client.auth.getSession().then(function (r) {
+      applyUser(r && r.data && r.data.session ? r.data.session.user : null);
+    }).catch(function () { renderSignedOut(); });
+  }
+
+  /* ---------------------------------------------------------------- modal */
+
+  function setMode(next) {
+    mode = next;
+    var isUp = next === 'signup';
+    els.tabIn.setAttribute('aria-selected', String(!isUp));
+    els.tabUp.setAttribute('aria-selected', String(isUp));
+    els.userFld.hidden = !isUp;
+    els.pass.setAttribute('autocomplete', isUp ? 'new-password' : 'current-password');
+    els.title.textContent = isUp ? 'Make your account' : 'Save your usual';
+    els.lede.textContent = isUp
+      ? 'Pick a username. No email link to click, you are signed in the second you make it.'
+      : 'Sign in and your username shows up right here in the header.';
+    els.submit.textContent = isUp ? 'Create account' : 'Sign in';
+    clearMsg();
+  }
+
+  function open(next) {
+    returnFocus = document.activeElement;
+    setMode(next || 'signin');
+    els.modal.setAttribute('data-open', 'true');
+    document.body.classList.add('is-locked');
+    var btn = document.getElementById('accountBtn');
+    if (btn) btn.setAttribute('aria-expanded', 'true');
+    window.setTimeout(function () { (mode === 'signup' ? els.user : els.email).focus(); }, 60);
+  }
+
+  function close() {
+    els.modal.setAttribute('data-open', 'false');
+    document.body.classList.remove('is-locked');
+    var btn = document.getElementById('accountBtn');
+    if (btn) btn.setAttribute('aria-expanded', 'false');
+    clearMsg();
+    els.form.reset();
+    if (returnFocus && returnFocus.focus && returnFocus.isConnected) returnFocus.focus();
+  }
+
+  /* ---------------------------------------------------------------- wiring */
+
+  els.tabIn.addEventListener('click', function () { setMode('signin'); els.email.focus(); });
+  els.tabUp.addEventListener('click', function () { setMode('signup'); els.user.focus(); });
+  els.close.addEventListener('click', close);
+
+  els.modal.addEventListener('mousedown', function (e) {
+    if (e.target === els.modal) close();
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (els.modal.getAttribute('data-open') !== 'true') return;
+    if (e.key === 'Escape') { close(); return; }
+    if (e.key !== 'Tab') return;
+    var f = els.modal.querySelectorAll('button, input, [href]');
+    if (!f.length) return;
+    var first = f[0], last = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  });
+
+  els.form.addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    if (!client) {
+      showMsg('error', 'Sign-in is unavailable right now. Refresh the page and try again.');
+      return;
+    }
+
+    var email = els.email.value.trim();
+    var pass = els.pass.value;
+    var uname = els.user.value.trim();
+    var isUp = mode === 'signup';
+
+    if (!email || email.indexOf('@') < 1) {
+      showMsg('error', 'Please enter an email address.');
+      els.email.focus();
+      return;
+    }
+    if (pass.length < 6) {
+      showMsg('error', 'Passwords need at least 6 characters.');
+      els.pass.focus();
+      return;
+    }
+    if (isUp && !/^[A-Za-z0-9_]{3,20}$/.test(uname)) {
+      showMsg('error', 'Usernames are 3 to 20 characters: letters, numbers, underscores.');
+      els.user.focus();
+      return;
+    }
+
+    clearMsg();
+    els.submit.disabled = true;
+    els.submit.textContent = isUp ? 'Creating account' : 'Signing in';
+
+    function done() {
+      els.submit.disabled = false;
+      els.submit.textContent = isUp ? 'Create account' : 'Sign in';
+    }
+
+    if (!isUp) {
+      client.auth.signInWithPassword({ email: email, password: pass }).then(function (r) {
+        done();
+        if (r.error) {
+          showMsg('error', friendly(r.error.message));
+          els.pass.focus();
+          return;
+        }
+        applyUser(r.data.user);
+      });
+      return;
+    }
+
+    // Check the handle before creating the account, so the common case gets a
+    // clear message instead of a database error. The unique index is still the
+    // real guard if two people pick the same handle at once.
+    client.rpc('username_available', { candidate: uname }).then(function (chk) {
+      if (chk.error) {
+        done();
+        showMsg('error', 'Could not check that username. Try again.');
+        return;
+      }
+      if (chk.data === false) {
+        done();
+        showMsg('error', 'That username is taken. Try another.');
+        els.user.focus();
+        return;
+      }
+      return client.auth.signUp({
+        email: email,
+        password: pass,
+        options: { data: { username: uname } }
+      }).then(function (s) {
+        done();
+        if (s.error) {
+          showMsg('error', friendly(s.error.message));
+          return;
+        }
+        if (s.data && s.data.session) {
+          applyUser(s.data.user);
+          return;
+        }
+        // No session came back. If the account already existed, sign-up is
+        // obfuscated and there is nothing to do but point at sign in.
+        if (s.data && s.data.user && s.data.user.identities && s.data.user.identities.length === 0) {
+          showMsg('error', 'That email already has an account. Switch to sign in.');
+          return;
+        }
+        // Otherwise the account exists and is confirmed (no email step), GoTrue
+        // just did not hand back a session. Sign in with the same credentials so
+        // the user lands signed in instead of being asked to do it again.
+        client.auth.signInWithPassword({ email: email, password: pass }).then(function (si) {
+          if (si.error) {
+            showMsg('ok', 'Account created. You can sign in now.');
+            setMode('signin');
+            return;
+          }
+          applyUser(si.data.user);
+        });
+      });
+    });
+  });
+
+  /* ---------------------------------------------------------------- start */
+
+  renderSignedOut();
+
+  if (client) {
+    client.auth.onAuthStateChange(function (_event, session) {
+      window.setTimeout(function () { applyUser(session ? session.user : null); }, 0);
+    });
+    refresh();
+  }
+})();
+</script>
+
+<header class="hero" id="top">
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <p class="eyebrow"><span class="eyebrow-dot"></span>Portland, Oregon — Est. 2016</p>
+      <h1>Doughnuts worth <em>waking up</em> for.</h1>
+      <p class="lede">Twelve flavors a day, fried in small batches from six in the morning on SE Division. Brown butter, spent vanilla bean, and whatever fruit looked good at the Sunday market.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="#visit">Order pickup</a>
+        <a class="btn btn-ghost" href="#case">See today's case</a>
+      </div>
+      <ul class="hero-facts">
+        <li>Fried from 6am</li>
+        <li>12 rotating flavors</li>
+        <li>Vegan Fridays</li>
+        <li>Walk-ins only</li>
+      </ul>
+    </div>
+    <figure class="hero-plate">
+      <img src="assets/hero.jpg" width="500" height="385" fetchpriority="high" decoding="async"
+        alt="A powdered doughnut fresh out of the fryer, sitting on dark parchment">
+      <figcaption class="hero-stamp">Fried 6am daily</figcaption>
+    </figure>
+  </div>
+</header>
+
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
+    <span>Brown Butter Glazed</span><span>Salted Cocoa Old Fashioned</span><span>Strawberry Rhubarb</span><span>Rainbow Sprinkle Cake</span><span>Spent Vanilla Custard</span><span>Meyer Lemon Curd</span>
+    <span>Brown Butter Glazed</span><span>Salted Cocoa Old Fashioned</span><span>Strawberry Rhubarb</span><span>Rainbow Sprinkle Cake</span><span>Spent Vanilla Custard</span><span>Meyer Lemon Curd</span>
+  </div>
+</div>
+
+<section class="section case" id="case">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow"><span class="eyebrow-dot"></span>Today's case</p>
+      <h2>Three you should order before they are gone.</h2>
+      <p class="lead">The case turns over all morning. These are the ones we fry first, and the ones that sell out fastest, roughly in that order.</p>
+    </div>
+    <div class="cards">
+      <article class="card">
+        <span class="tag tag-alt">Fan favorite</span>
+        <div class="card-photo">
+          <img src="assets/photo-1.jpg" alt="A single dark chocolate glazed doughnut on a pale plate" decoding="async">
+        </div>
+        <div class="card-body">
+          <h3>Salted Cocoa Old Fashioned</h3>
+          <p>Buttermilk, 72% cocoa, flake salt. Crackly at the edges, custardy in the middle, best within ten minutes of leaving the fryer.</p>
+          <p class="price">$4.50</p>
+        </div>
+      </article>
+      <article class="card">
+        <span class="tag">Weekend only</span>
+        <div class="card-photo">
+          <img src="assets/photo-2.jpg" alt="Pink glazed doughnuts coated in rainbow sprinkles on a wooden board" decoding="async">
+        </div>
+        <div class="card-body">
+          <h3>Rainbow Sprinkle Cake</h3>
+          <p>A dense vanilla cake ring, dipped in raspberry glaze and buried in sprinkles. The one the kids pick, and the one the adults quietly ask for.</p>
+          <p class="price">$4.00</p>
+        </div>
+      </article>
+      <article class="card">
+        <span class="tag tag-butter">By the dozen</span>
+        <div class="card-photo">
+          <img src="assets/photo-3.jpg" alt="An overhead tray of assorted glazed and filled doughnuts on a cooling rack" decoding="async">
+        </div>
+        <div class="card-body">
+          <h3>The Doughbird Dozen</h3>
+          <p>Whatever is freshest at the moment you walk in, boxed warm. Call ahead by 8am and we will hold one for you.</p>
+          <p class="price">$34.00</p>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="section story" id="story">
+  <div class="wrap">
+    <div class="story-grid">
+      <div class="body">
+        <p class="eyebrow">Our dough</p>
+        <h2>A 36-hour dough and a very loud fryer.</h2>
+        <p>The dough starts the day before yesterday. Slow cold ferment, local butter, flour from a mill two hours up the gorge. No shortcuts, no mixes, and nothing fried ahead of time and held under a lamp.</p>
+        <p>We fry from six in the morning until the case is empty, which on a sunny Saturday means about eleven.</p>
+      </div>
+      <blockquote>
+        <p>If it is not worth getting up at four for, it does not go in the case.</p>
+        <cite>Marisol Vega — founder &amp; head fryer</cite>
+      </blockquote>
+    </div>
+    <ul class="facts">
+      <li><b>36 hrs</b><span>Cold ferment on every batch of dough, every single day.</span></li>
+      <li><b>6 am</b><span>First tray hits the case. Bring a jacket, the queue starts before that.</span></li>
+      <li><b>12</b><span>Flavors on the board, four of them swapped out every Monday.</span></li>
+    </ul>
+  </div>
+</section>
+
+<section class="section visit" id="visit">
+  <div class="wrap visit-grid">
+    <div class="visit-card">
+      <p class="eyebrow"><span class="eyebrow-dot"></span>Visit us</p>
+      <h2>3312 SE Division St</h2>
+      <p class="address">
+        <strong>Portland, OR 97202</strong><br>
+        On the corner of 33rd, two blocks from the food carts.<br>
+        Street parking, bike racks out front, dog-friendly sidewalk seating.
+      </p>
+      <ul class="hours">
+        <li><span>Monday – Thursday</span><b>7am – 2pm</b></li>
+        <li><span>Friday</span><b>7am – 3pm</b></li>
+        <li class="today"><span>Saturday – Sunday</span><b>7am – 4pm</b></li>
+      </ul>
+      <div class="visit-cta">
+        <a class="btn btn-primary" href="tel:+15035550142">Call to hold a dozen</a>
+        <a class="btn btn-outline" href="#case">What's in the case</a>
+      </div>
+    </div>
+    <div class="menu">
+      <p class="eyebrow">The signature four</p>
+      <h3>On the board every day</h3>
+      <ul>
+        <li>
+          <span class="name">Brown Butter Glazed<span class="note">Cultured butter, browned to hazelnut</span></span>
+          <span class="dots"></span><span class="cost">$4.25</span>
+        </li>
+        <li>
+          <span class="name">Salted Cocoa Old Fashioned<span class="note">Buttermilk, 72% cocoa, flake salt</span></span>
+          <span class="dots"></span><span class="cost">$4.50</span>
+        </li>
+        <li>
+          <span class="name">Strawberry Rhubarb<span class="note">Market fruit, cooked down in-house</span></span>
+          <span class="dots"></span><span class="cost">$4.75</span>
+        </li>
+        <li>
+          <span class="name">Rainbow Sprinkle Cake<span class="note">Vanilla cake ring, raspberry glaze</span></span>
+          <span class="dots"></span><span class="cost">$4.00</span>
+        </li>
+      </ul>
+      <p class="menu-foot">Four rotating specials join them each Monday. Vegan batch out at 7am on Fridays, first come.</p>
+    </div>
+  </div>
+</section>
+
+<footer class="foot">
+  <div class="wrap">
+    <div>
+      <a class="brand" href="#top" aria-label="Doughbird, back to top">
+        <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+          <circle cx="24" cy="24" r="21" fill="none" stroke="currentColor" stroke-width="3.4"/>
+          <path d="M15 17c0-4 4-6 9-6s9 2 9 6-4 7-9 7-9-3-9-7z" fill="#C6315B"/>
+          <circle cx="24" cy="30" r="6.5" fill="none" stroke="currentColor" stroke-width="3.4"/>
+        </svg>
+        Doughbird
+      </a>
+      <p class="foot-line">Small-batch doughnuts, fried from 6am on SE Division. Portland, Oregon.</p>
+      <p class="fine foot-line">A demo page for a fictional shop. Address, hours, phone and prices are placeholders.</p>
+    </div>
+    <p class="fine">
+      <a href="#case">Today's case</a> · <a href="#story">Our dough</a> · <a href="#visit">Visit</a><br>
+      © 2026 Doughbird. All rights reserved.
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>

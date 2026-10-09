@@ -1,0 +1,21 @@
+{
+  "vercel": {
+    "projectId": "prj_6TiIn4awpTCPPUMJdrTiCRMI3nIw",
+    "projectName": "doughbird-donuts",
+    "url": "https://doughbird-donuts.vercel.app",
+    "lastDeploymentId": "dpl_5vKira76Lpdirxu355GofvQ37cPX",
+    "lastPublishedAt": "2026-10-08T19:12:06.556Z"
+  },
+  "updatedAt": "2026-10-08T19:12:06.557Z",
+  "supabase": {
+    "ref": "lsxcdyzjyfsohdezdlkl",
+    "name": "doughbird-donuts",
+    "url": "https://lsxcdyzjyfsohdezdlkl.supabase.co",
+    "envFile": null,
+    "configJs": "env.js",
+    "vars": [
+      "SUPABASE_URL",
+      "SUPABASE_ANON_KEY"
+    ]
+  }
+}
